@@ -32,7 +32,7 @@ class Random
          throw new Exception('PHP CURL must be enabled on server to use Random::get');      
 
       # set the user agent if provided
-      if( $opts['ua'] )
+      if( isset($opts['ua']) )
          $this->ua = $opts['ua'];
    }
 
