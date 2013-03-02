@@ -4,8 +4,23 @@
  * limitaions set forth by random.org
  *
  * Example: 
- * later
+ * $random  = new Random();
+ *
  * 
+ * #### ALL USES BELOW return an array of results ####
+ *
+ * 
+ * # generate strings 3 characters long, only from lower case chars ( 10 strings )
+ * $strings = $random->string( 3, 10, Random::LOWERCASE );
+ *
+ * # generate strings only from lowercase, and do not reuse chars within a string
+ * $strings = $random->string( 3, 10, Random::UNIQUE );
+ *
+ * # generate unique strings, with upper and lower, but no digits
+ * $strings = $random->string( 3, 10, Random::ALL ^ Random::DIGITS )
+ *
+ * # generate unique, upper, lower, numeric strings
+ * $strings = $random->string( 3, 10, Random::ALL );
  * 
  */
 class Random
