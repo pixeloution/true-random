@@ -10,9 +10,22 @@
  */
 class Random
 {
+   # used in string creation to specify what type of strings are wanted
+   const DIGITS    = 1;
+   const UPPERCASE = 2;
+   const LOWERCASE = 4;
+   const UNIQUE    = 8;
+   const ALL       = 15;
+
+   # if below this amount remains, calls to random.org will fail. all IP addresses
+   # start with 1,000,000 bits and regenerate at the rate of 200,000 per day
+   const MINIMUM_BITS_REMAINING = 25000;
+
    protected static $url = 'http://www.random.org';
    protected static $int = '/integers/?num=%d&min=%d&max=%d&col=1&base=10&format=plain&rnd=new';
    protected static $seq = '/sequences/?min=%d&max=%d&col=1&format=plain&rnd=new';
+   protected static $str = '/strings/?num=%d&len=%d&digits=%s&upperalpha=%s&loweralpha=%s&unique=%s&format=plain&rnd=new';
+   protected static $qta = '/quota/?format=plain';
    
    # set the UserAgent; random.org recommends your email address be in the UA string
    protected $ua  = '';
@@ -23,7 +36,7 @@ class Random
     * TODO: perhaps dependency injection for code that actually gets stuff from
     * the internets
     */
-   public function __construct( $opts )
+   public function __construct( $opts = [] )
    {
       #
       # dependency
@@ -55,7 +68,7 @@ class Random
       #
       # get the numbers from random.org
       # 
-      $raw  = $this->_get_data( $url );
+      $raw  = $this->_fetch( $url );
       $ints = $this->_parse( $raw ); 
 
       return $ints;
@@ -72,10 +85,45 @@ class Random
       #
       # get the numbers from random.org
       # 
-      $raw  = $this->_get_data( $url );
+      $raw  = $this->_fetch( $url );
       $ints = $this->_parse( $raw ); 
 
       return $ints;   
+   }
+
+
+   public function string( $length, $quantity, $opts = Random::ALL )
+   {
+      # determine valid character sets for random string generated
+      $digits = ( $opts & Random::DIGITS )    ? 'on' : 'off';
+      $upper  = ( $opts & Random::UPPERCASE ) ? 'on' : 'off';
+      $lower  = ( $opts & Random::LOWERCASE ) ? 'on' : 'off';
+      $unique = ( $opts & Random::UNIQUE )    ? 'on' : 'off';
+
+      # 
+      # build HTTP request URL
+      # 
+      $url = self::$url . sprintf( self::$str, $quantity, $length, $digits, $upper, $lower, $unique );
+
+      # 
+      # grab the strings from random.org
+      # 
+      $raw = $this->_fetch( $url );
+
+      return explode( "\n", trim( $raw ) );
+   }
+
+
+   protected function _fetch( $url ) 
+   {
+      # there are quote limits on a per IP address basis for random.org usage - this
+      # checks that we still have quota left before making a call
+      $remaining = trim( $this->_get_data(self::$url . self::$qta) );
+      
+      if( $remaining < self::MINIMUM_BITS_REMAINING )
+         throw new QuotaExceededException('You have exceeded your quota. Visit Random.org to learn how to buy more resources');
+
+      return $this->_get_data( $url );
    }
 
 
@@ -127,3 +175,5 @@ class Random
       return $data;
    }
 }
+
+class QuotaExceededException extends Exception {}
