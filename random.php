@@ -44,7 +44,11 @@ class Random
    
    # set the UserAgent; random.org recommends your email address be in the UA string
    protected $ua  = '';
+
+   # disable / allow quota checks
+   protected $quota_check = true;
    
+
    /**
     * makes sure we have CURL installed
     *
@@ -62,7 +66,23 @@ class Random
       # set the user agent if provided
       if( isset($opts['ua']) )
          $this->ua = $opts['ua'];
+
+      if( isset($opts['quota_check']) )
+         $this->quota_check = $opts['quota_check'];
    }
+
+   /**
+    * public accessor to set the $quota_check values -- enables/disables
+    * quota checking before making a query
+    * 
+    * @param  bool $value
+    * @return void
+    */
+   public function use_quota_check( $value )
+   {
+      $this->quota_check = (bool) $value;
+   }
+
 
    /**
     * Gets Random Integer(s) From API
@@ -128,15 +148,26 @@ class Random
       return explode( "\n", trim( $raw ) );
    }
 
+   /**
+    * provides the number of remaining bits @ random.org for the requesting IP address
+    * 
+    * @return int
+    */
+   public function remaining_bits()
+   {
+      return trim( $this->_get_data(self::$url . self::$qta) );
+   }
+
 
    protected function _fetch( $url ) 
    {
-      # there are quote limits on a per IP address basis for random.org usage - this
-      # checks that we still have quota left before making a call
-      $remaining = trim( $this->_get_data(self::$url . self::$qta) );
-      
-      if( $remaining < self::MINIMUM_BITS_REMAINING )
-         throw new QuotaExceededException('You have exceeded your quota. Visit Random.org to learn how to buy more resources');
+      if( $this->quota_check ) 
+      {
+         # there are quote limits on a per IP address basis for random.org usage - this
+         # checks that we still have quota left before making a call
+         if( $this->remaining_bits() < self::MINIMUM_BITS_REMAINING )
+            throw new QuotaExceededException('You have exceeded your quota. Visit Random.org to learn how to buy more resources');
+      }
 
       return $this->_get_data( $url );
    }
