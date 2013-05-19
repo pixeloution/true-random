@@ -1,0 +1,12 @@
+{
+   "name"               : "pixeloution/true-random",
+   "minimum-stability"  : "dev",
+   "require" : 
+   { 
+      "guzzle/guzzle"   : "3.5.*" 
+   },
+   "autoload" : 
+   {
+      "psr-0"           : { "Pixeloution" : "src/" }
+   }   
+}
