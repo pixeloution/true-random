@@ -35,8 +35,10 @@ Options are:
 * Randomizer::DIGITS  
 * Randomizer::UPPERCASE
 * Randomizer::LOWERCASE
-* Randomizer::UNIQUE 
+* Randomizer::UNIQUE
 * Randomizer::ALL 
+
+Some examples:
 
     # returns all strings containing uppercase and lowercase only
     $array = $generator->strings( $length, $quantity, Randomizer::UPPERCASE | Randomizer::LOWERCASE );
