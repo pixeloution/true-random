@@ -20,16 +20,17 @@ the free allowance, there are instructions on random.org for purchasing addition
 ## Generate Lists of Integers
 Returns an array of non-unique integers between min, max
 
-    $array = $generator->integers( $minimum_value, $maximum_value, $quantity );
+    $generator->integers( $minimum_value, $maximum_value, $quantity );
 
 ## Generate A Sequence of Integers
 Returns an array of a integers from $start to $end, each integer appearing once.
 
-   $array = $generator->sequence( $start, $end );
+    $generator->sequence( $start, $end );
 
 ## Generate a list of random strings
-Returns an array of strings $length characters long, made up of the characters specified
-in the options with bitwise operators. Default is ALL ^ UNIQUE
+Returns an array of strings $length characters long, made up of character types
+specified via bitwise options. The default value is `ALL ^ UNIQUE` 
+
 
 Options are: 
 * Randomizer::DIGITS  
@@ -41,12 +42,12 @@ Options are:
 Some examples:
 
     # returns all strings containing uppercase and lowercase only
-    $array = $generator->strings( $length, $quantity, Randomizer::UPPERCASE | Randomizer::LOWERCASE );
+    $generator->strings( $len, $qty, Randomizer::UPPERCASE | Randomizer::LOWERCASE );
 
     # returns lowercase strings, no repeated letters
-    $array = $generator->strings( $length, $quantity, Randomizer::LOWERCASE | Randomizer::UNIQUE );
+    $generator->strings( $len, $qty, Randomizer::LOWERCASE | Randomizer::UNIQUE );
 
     # returns uppercase, lowercase, numeric with non-unique charaters. this is the default
-    $array = $generator->strings( $length, $quantity, Randomizer::ALL ^ Randomizer::UNIQUE );    
+    $generator->strings( $len, $qty, Randomizer::ALL ^ Randomizer::UNIQUE );    
 
 
