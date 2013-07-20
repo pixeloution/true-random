@@ -8,7 +8,16 @@ this program will check your remaining quota before sending requests. If you nee
 the free allowance, there are instructions on random.org for purchasing additional.
 
 ## Installation
-[ composer instructions ]
+Not available via packagist at the moment. You can install via:
+    
+    "repositories" : [
+      {
+         "type" : "vcs",
+         "url" : "git@github.com:pixeloution/true-random.git"
+      },
+    ]
+
+in your composer.json file, which will load it directly from github.
 
 ## Set-Up
     use Pixeloution\Random\Randomizer;
