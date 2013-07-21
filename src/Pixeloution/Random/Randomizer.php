@@ -1,7 +1,7 @@
 <?php namespace Pixeloution\Random;
 
-use Pixeloution\Random\Client\ClientInterface;
-use Pixeloution\Random\Client\Client;
+use \Guzzle\Http\ClientInterface;
+use \InvalidArgumentException;
 
 class QuotaExceededException extends \Exception {}
 class ConnectivityException extends \Exception {}
@@ -78,7 +78,7 @@ class Randomizer
      */
     public function __construct($UA, ClientInterface $browser = null)
     {
-        $this->browser = $browser ?: new Client();
+        $this->browser = $browser ?: new \Guzzle\Http\Client();
         $this->browser->setUserAgent( 'RandomizerLib/' . $UA );
         $this->browser->setBaseUrl  ( $this->service );
     }
