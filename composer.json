@@ -1,10 +1,11 @@
 {
    "name"               : "pixeloution/true-random",
    "minimum-stability"  : "dev",
+   "description"        : "Interface for getting random datra from random.org",
    "require" : 
    { 
-      "guzzle/guzzle"   : "3.5.*" ,
-      "php" : ">=5.3.0"
+      "guzzle/guzzle" : "3.5.*" ,
+      "php" : ">=5.3.2"
    },
    "require-dev" : 
    {
