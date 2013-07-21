@@ -1,23 +1,23 @@
 TrulyRandom
 ===========
-Composer-based library to interact with random.org's API in order to generate truly random 
+Composer-compatible library to interact with random.org's API in order to generate truly random 
 lists of integers, sequences of integers, and random alpha-numeric strings.
 
 Random.org does limit the amount of random numbers/strings you can generate in a day, and
 this program will check your remaining quota before sending requests. If you need more than
 the free allowance, there are instructions on random.org for purchasing additional.
 
-## Installation
-Not available via packagist at the moment. You can install via:
-    
-    "repositories" : [
-      {
-         "type" : "vcs",
-         "url" : "git@github.com:pixeloution/true-random.git"
-      },
-    ]
+I have nothing to do with random.org other then thinking its a cool service.
 
-in your composer.json file, which will load it directly from github.
+## Installation
+Install via Packagist
+    
+    "require" : 
+    { 
+      "pixeloution/true-random" : "*" 
+    },
+
+in your composer.json file
 
 ## Set-Up
     use Pixeloution\Random\Randomizer;
