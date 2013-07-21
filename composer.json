@@ -3,7 +3,8 @@
    "minimum-stability"  : "dev",
    "require" : 
    { 
-      "guzzle/guzzle"   : "3.5.*" 
+      "guzzle/guzzle"   : "3.5.*" ,
+      "php" : ">=5.3.0"
    },
    "require-dev" : 
    {
