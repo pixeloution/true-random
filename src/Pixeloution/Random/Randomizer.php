@@ -82,7 +82,7 @@ class Randomizer
      * @param object $browser
      * a browser object adhering to ClientInterface
      */
-    public function __construct($UA, ClientInterface $browser = null)
+    public function __construct($UA = 'none@example.com', ClientInterface $browser = null)
     {
         $this->browser = $browser ?: new \Guzzle\Http\Client();
         $this->browser->setUserAgent( 'RandomizerLib/' . $UA );
@@ -201,18 +201,6 @@ class Randomizer
         $this->reportQuota = $setting;
     }
 
-
-    public function userAgent($UA = null)
-    {
-        if( $UA === null)
-        {
-            return $this->browser->getDefaultUserAgent();
-        }
-        else
-        {
-            $this->browser->setUserAgent( 'RandomizerLib/' . $UA );
-        }
-    }
 
     protected function fetchData($uri)
     {
