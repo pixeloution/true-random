@@ -18,6 +18,12 @@ class Randomizer
     const ALL       = 15;
 
     /**
+     * define minimum and maximum string lengths
+     */
+    const MIN_STRING = 1;
+    const MAX_STRING = 20;
+
+    /**
      * automatically fails calls to random.org when fewer then this number of bits
      * remaing available to the calling IP address. random.org grants users 1M bits
      * and regenerates those bits at 200K per day.
@@ -84,6 +90,21 @@ class Randomizer
     }
 
     /**
+     * returns a single integer between min/max
+     * @param  [type] $min [description]
+     * @param  [type] $max [description]
+     * @return [type]      [description]
+     */
+    public function integer($min, $max)
+    {
+        if($min >= $max)
+            throw new InvalidArgumentException('For arguments ($min,$max) min must be less than max');
+
+        $data = $this->integers($min, $max, 1);
+        return $data[0];
+    }
+
+    /**
      * generate a list of integers
      * 
      * @param  integer  $min      
@@ -94,6 +115,9 @@ class Randomizer
      */
     public function integers($min, $max, $quantity = 1)
     {
+        if($min >= $max)
+            throw new InvalidArgumentException('For arguments ($min,$max) min must be less than max');
+
         return $this->fetchData(sprintf($this->integers, $quantity, $min, $max));
     }
 
@@ -109,10 +133,10 @@ class Randomizer
      */
     public function sequence($low, $high)
     {
-        if($high <= $low) 
-            return null;
+        if($low >= $high)
+            throw new InvalidArgumentException('For arguments ($low,$high) low must be less than high');
 
-        return $this->fetchData( sprintf($this->sequence, $low, $high) );
+        return $this->fetchData(sprintf($this->sequence, $low, $high));
     }
 
     /**
@@ -125,9 +149,9 @@ class Randomizer
      * 
      * @return array
      */
-    public function strings($length, $quantity, $opts = null)
+    public function strings($length, $quantity = 1, $opts = null)
     {
-        if($length > 20 || $length < 1)
+        if($length > self::MAX_STRING || $length < self::MIN_STRING)
             throw new \InvalidArgumentException('value must be between 1 and 20');
 
         if($opts === null)
@@ -142,6 +166,30 @@ class Randomizer
         return $this->fetchData( sprintf($this->strings, $quantity, $length, $digits, $upper, $lower, $unique) );
     }
 
+
+    /**
+     * returns remaining bits left from random.org for free usage
+     * 
+     * @throws QuotaExceededException
+     * @return int
+     */
+    public function checkQuota()
+    {
+        $request  = $this->browser->get($this->quota);
+        $response = $request->send();
+
+        if($response->getStatusCode() !== 200)
+            throw new ConnectivityException( 'unable to fetch data from random.org' );
+
+        $remaining = trim( $response->getBody() );
+
+        // should this really be an exception?
+        if($remaining < self::MINIMUM_BITS_REMAINING)
+            throw new QuotaExceededException('You have exceeded your quota. Visit Random.org to learn more');      
+
+        return $remaining;
+    }
+
     /**
      * setting this value to true causes the object to output used bits and remaining
      * bits during each request. should be left false for production
@@ -153,11 +201,26 @@ class Randomizer
         $this->reportQuota = $setting;
     }
 
+
+    public function userAgent($UA = null)
+    {
+        if( $UA === null)
+        {
+            return $this->browser->getDefaultUserAgent();
+        }
+        else
+        {
+            $this->browser->setUserAgent( 'RandomizerLib/' . $UA );
+        }
+    }
+
     protected function fetchData($uri)
     {
         $start = $this->checkQuota();
 
         $request = $this->browser->get($uri);
+
+        // timeout length recommended by random.org
         $request->getCurlOptions()->set(CURLOPT_CONNECTTIMEOUT, 30);
         
         $response = $request->send();
@@ -182,21 +245,6 @@ class Randomizer
         $results = $response->getBody();
         
         return explode("\n", trim($results));
-    }
-
-    protected function checkQuota()
-    {
-        $request  = $this->browser->get($this->quota);
-        $response = $request->send();
-
-        if($response->getStatusCode() !== 200)
-            throw new ConnectivityException( 'unable to fetch data from random.org' );
-
-        $remaining = trim( $response->getBody() );
-        if($remaining < self::MINIMUM_BITS_REMAINING)
-            throw new QuotaExceededException('You have exceeded your quota. Visit Random.org to learn how to buy more resources');      
-
-        return $remaining;
     }
 }
 
